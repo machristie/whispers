@@ -4,6 +4,7 @@ import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthenticationService } from '@services/authentication.service';
 import { CurrentUserService } from '@services/current-user.service';
+import { PasswordResetComponent } from '@app/password-reset/password-reset.component';
 
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/startWith';
@@ -34,8 +35,10 @@ export class AuthenticationComponent implements OnInit {
 
   constructor(
     formBuilder: FormBuilder,
+    private dialog: MatDialog,
     public authenticationService: AuthenticationService,
     public authenticationDialogRef: MatDialogRef<AuthenticationComponent>,
+    public passwordResetDialogRef: MatDialogRef<PasswordResetComponent>,
     public currentUserService: CurrentUserService,
     public router: Router,
     private route: ActivatedRoute,
@@ -53,6 +56,12 @@ export class AuthenticationComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  passwordReset() {
+    this.authenticationDialogRef.close();
+    this.passwordResetDialogRef = this.dialog.open(PasswordResetComponent, {
+    });
   }
 
   openSnackBar(message: string, action: string, duration: number) {
