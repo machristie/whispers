@@ -289,12 +289,40 @@ export class EventPublicReportComponent implements OnInit, AfterViewInit {
   mapEvent(eventData) {
     const markers = [];
     const countyPolys = [];
+    const countyNames = [];
     this.unMappables = [];
+    const test = [];
+    let test2 = [];
+    test2 = {
+      'type': 'featureCollection',
+      'features': []
+    };
     for (const eventlocation of eventData.eventlocations) {
       // markers.push(eventlocation);
       if (eventlocation.administrative_level_two_points !== null) {
+      
+        let poly;
+        let coordinates;
+        coordinates = JSON.parse(eventlocation.administrative_level_two_points.replace('Y', ''));
         countyPolys.push(JSON.parse(eventlocation.administrative_level_two_points.replace('Y', '')));
+        countyNames.push(eventlocation.administrative_level_two_string);
+
+        poly =  {
+          'type': 'Feature',
+            'properties': { 'name': eventlocation.administrative_level_two_string },
+          'geometry': {
+            'type': 'Polygon',
+            'coordinates': JSON.parse(eventlocation.administrative_level_two_points.replace('Y', ''))
+          }
+        };
+
+        test.push(poly);
+        test2.features.push(poly);
+        /* this.eventPolys = new L.GeoJSON(test2, {
+          }
+          ).addData(this.detailMap); */
       }
+      /* {'type': 'Polygon', 'coordinates': [JSON.parse(eventlocation.administrative_level_two_points.replace('Y', ''))]} */
     }
     /* console.log('mapevents ' + this.locationMarkers); */
     // let eventPolys;
@@ -302,8 +330,48 @@ export class EventPublicReportComponent implements OnInit, AfterViewInit {
       if (this.eventPolys) {
         this.detailMap.removeLayer(this.eventPolys);
       }
-      this.eventPolys = L.polygon(countyPolys, { color: 'blue' }).addTo(this.detailMap);
+       /* const map = this.detailMap;
+      this.eventPolys = new L.GeoJSON(test2, {
+        onEachFeature: function(feature, layer) {
+          let label = L.marker(layer.getBounds().getCenter(), {
+            icon: L.divIcon({
+              className: 'label',
+              html: feature.properties.name,
+              iconSize: [ 100, 40]
+            })
+          }).addTo(map);
+        }
+        } */
+      /* this.eventPolys = L.polygon(countyPolys, { color: 'blue' }).addTo(this.detailMap);
+      countyNames.forEach(layer => {
+        this.eventPolys._latlngs.forEach(p => {
+          p.bindTooltip(layer, {
+            className: 'label',
+            permanent: true,
+            direction: 'center'
+          }).openTooltip();
+        });
+        this.eventPolys.bindTooltip(layer, {
+          className: 'label',
+          permanent: true,
+          direction: 'center'
+        }).openTooltip();
+      }); */
+      /* this.eventPolys = L.polygon(countyPolys, { color: 'blue' }).bindTooltip(countyNames, {className: 'label',
+      permanent: true,
+      direction: 'center'
+    }).openTooltip().addTo(this.detailMap); */
+      /* this.eventPolys.bindTooltip(countyNames, {
+        className: 'label',
+        permanent: true,
+        direction: 'center'
+      }).openTooltip(); */
+      this.eventPolys = new L.geoJSON(test2, {
+        color: 'blue',
+        onEachFeature: this.onEachFeature
+      }).addTo(this.detailMap);
     }
+
     /* for (const marker of markers) {
       if (marker.latitude === null || marker.longitude === null || marker.latitude === undefined || marker.longitude === undefined) {
         this.unMappables.push(marker);
@@ -340,6 +408,28 @@ export class EventPublicReportComponent implements OnInit, AfterViewInit {
       this.detailMap.fitBounds(bounds, { padding: [10, 10] });
     }
   }
+
+  onEachFeature(feature, layer) {
+    // DO THIS FOR EACH COUNTRY
+    // events
+    layer.on({
+        mouseover: function () {
+            this.setStyle({
+                'fillColor': '#b45501',
+            });
+        },
+        mouseout: function () {
+            this.setStyle({
+                'fillColor': '#f0d1b1',
+            });
+        },
+        click: function () {
+            // TODO Link to page
+            alert('Clicked on ' + feature.properties.name);
+        }
+    });
+    layer.bindTooltip(feature.properties.name, {permanent:true,direction:'center',className: 'label'});
+     }
 
   getlocations() {
     // getting the locations that eventlocations
