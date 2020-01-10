@@ -300,7 +300,7 @@ export class EventPublicReportComponent implements OnInit, AfterViewInit {
     for (const eventlocation of eventData.eventlocations) {
       // markers.push(eventlocation);
       if (eventlocation.administrative_level_two_points !== null) {
-      
+
         let poly;
         let coordinates;
         coordinates = JSON.parse(eventlocation.administrative_level_two_points.replace('Y', ''));
@@ -312,7 +312,7 @@ export class EventPublicReportComponent implements OnInit, AfterViewInit {
             'properties': { 'name': eventlocation.administrative_level_two_string },
           'geometry': {
             'type': 'Polygon',
-            'coordinates': JSON.parse(eventlocation.administrative_level_two_points.replace('Y', ''))
+            'coordinates': [JSON.parse(eventlocation.administrative_level_two_points.replace('Y', ''))]
           }
         };
 
